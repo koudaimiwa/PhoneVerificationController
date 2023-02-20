@@ -15,22 +15,22 @@ public protocol PhoneVerificationDelegate: class {
 }
 
 open class PhoneVerificationController: UIViewController {
-	@IBOutlet var headerBackgroundImageView: UIImageView!
-	@IBOutlet var headerForegroundImageView: UIImageView!
-	@IBOutlet var phoneContainerView: UIView!
-	@IBOutlet var phoneActivityIndicator: UIActivityIndicatorView!
-	@IBOutlet var phoneCountryImageView: UIImageView!
-	@IBOutlet var phoneCountryField: UITextField!
-	@IBOutlet var phoneNumberField: UITextField!
-	@IBOutlet var phoneSendButton: UIButton!
-	@IBOutlet var phoneCancelButton: UIButton!
-	@IBOutlet var phoneDescriptionLabel: UILabel!
-	@IBOutlet var codeContainerView: UIView!
-	@IBOutlet var codeTextFields: [UITextField]!
-	@IBOutlet var codeActivityIndicator: UIActivityIndicatorView!
-	@IBOutlet var codeSendButton: UIButton!
-	@IBOutlet var codeTryAgainButton: UIButton!
-	@IBOutlet var codeDescriptionLabel: UILabel!
+	@IBOutlet weak var phoneContainerView: UIView!
+	@IBOutlet weak var phoneActivityIndicator: UIActivityIndicatorView!
+	@IBOutlet weak var phoneCountryImageView: UIImageView!
+	@IBOutlet weak var phoneCountryField: UITextField!
+    @IBOutlet weak var phoneCountryFieldBorder: UIView!
+    @IBOutlet weak var phoneNumberField: UITextField!
+    @IBOutlet weak var phoneNumberFieldBorder: UIView!
+    @IBOutlet weak var phoneSendButton: UIButton!
+	@IBOutlet weak var phoneCancelButton: UIButton!
+	@IBOutlet weak var phoneDescriptionLabel: UILabel!
+	@IBOutlet weak var codeContainerView: UIView!
+	@IBOutlet var codeTextFields: [CodeTextField]!
+	@IBOutlet weak var codeActivityIndicator: UIActivityIndicatorView!
+	@IBOutlet weak var codeSendButton: UIButton!
+	@IBOutlet weak var codeTryAgainButton: UIButton!
+	@IBOutlet weak var codeDescriptionLabel: UILabel!
 
 	static let bundle: Bundle = {
 		guard let path = Bundle(for: PhoneVerificationController.self).path(forResource: "PhoneVerificationControllerResources", ofType: "bundle"),
@@ -69,7 +69,7 @@ open class PhoneVerificationController: UIViewController {
 extension PhoneVerificationController {
 	override open func viewDidLoad() {
 		super.viewDidLoad()
-
+        
 		// sort by x (outlet collections have no guaranteed order)
 		if let stackView = codeTextFields.first?.superview as? UIStackView {
 			codeTextFields.sort { left, right in
@@ -83,6 +83,10 @@ extension PhoneVerificationController {
 		phoneCountryField.inputView = countryPicker
 		for field in codeTextFields {
 			field.delegate = self
+            (field as! CodeTextField).deleteAction = { [weak self] in
+                guard let _self = self else { return }
+                _self.keyboardInputShouldDelete((field as! CodeTextField))
+            }
 		}
 
 		// strings
@@ -122,11 +126,12 @@ extension PhoneVerificationController {
 		for view in [view, phoneContainerView, codeContainerView] {
 			view?.backgroundColor = configuration.background
 		}
-		headerBackgroundImageView.image = configuration.headerBackground
-		headerForegroundImageView.image = configuration.headerForeground
 		for label in [phoneDescriptionLabel, codeDescriptionLabel] {
 			label?.textColor = configuration.text
 		}
+        for border in [phoneCountryFieldBorder, phoneNumberFieldBorder] {
+            border?.backgroundColor = configuration.phonenumberFieldBorder
+        }
 		for button in [phoneCancelButton, codeTryAgainButton] {
 			button?.tintColor = configuration.buttonTint
 		}
@@ -141,7 +146,11 @@ extension PhoneVerificationController {
 			field?.textColor = configuration.text
 		}
 		for field in codeTextFields {
-			field.layer.borderColor = configuration.codeFieldBackgroundFilled.cgColor
+            var bottomLine = CALayer()
+            bottomLine.frame = CGRect(x: 0.0, y: field.frame.height + 1, width: field.frame.width, height: 1.0)
+            bottomLine.backgroundColor = configuration.codeFieldBorder.cgColor
+            field.borderStyle = UITextField.BorderStyle.none
+            field.layer.addSublayer(bottomLine)
 			field.textColor = configuration.codeFieldText
 		}
 	}

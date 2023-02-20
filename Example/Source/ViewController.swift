@@ -11,7 +11,7 @@ import UIKit
 
 class ViewController: UIViewController {
 	@IBAction func startVerification() {
-		let configuration = Configuration(headerBackground: #imageLiteral(resourceName: "Menu Background"), requestCode: { _, completion in
+		let configuration = Configuration(requestCode: { _, completion in
 			DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
 				completion("1234567890", nil)
 			}
@@ -22,6 +22,7 @@ class ViewController: UIViewController {
 		})
 
 		let vc = PhoneVerificationController(configuration: configuration)
+        vc.modalPresentationStyle = .fullScreen
 		present(vc, animated: true)
 	}
 }

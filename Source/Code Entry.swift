@@ -9,10 +9,12 @@
 import UIKit
 
 extension PhoneVerificationController: UITextFieldDelegate {
-	@IBAction func enteredCodeCharacter(_ sender: UITextField) {
+    
+	@IBAction func enteredCodeCharacter(_ sender: CodeTextField) {
+
 		// update field UI
 		let filled = !(sender.text?.isEmpty ?? true)
-		UIView.animate(withDuration: configuration.animationDuration) {
+		UIView.animate(withDuration: configuration.animationDuration) { [unowned self] in
 			sender.backgroundColor = filled ? self.configuration.codeFieldBackgroundFilled : self.configuration.codeFieldBackgroundEmpty
 		}
 
@@ -35,19 +37,36 @@ extension PhoneVerificationController: UITextFieldDelegate {
 			codeTextFields.last?.becomeFirstResponder()
 		}
 	}
+    
+    func pastePin(pin: String) {
+        for (index, char) in pin.enumerated() {
+            guard index < 6 else { return }
+            codeTextFields[index].text = String(char)
+            enteredCodeCharacter(codeTextFields[index])
+        }
+    }
 
-	func keyboardInputShouldDelete(_ textField: UITextField) -> Bool {
-		guard let index = codeTextFields.index(of: textField), index > 0 else { return true }
-		codeTextFields[index - 1].becomeFirstResponder()
-		return true
+    func keyboardInputShouldDelete(_ textField: CodeTextField) {
+		guard let index = codeTextFields.firstIndex(of: textField), index > 0 else { return }
+        codeTextFields[index].resignFirstResponder()
+        UIView.animate(withDuration: configuration.animationDuration) { [unowned self] in
+            self.codeTextFields[index - 1].backgroundColor = self.configuration.codeFieldBackgroundEmpty
+        }
+        codeTextFields[index - 1].text = ""
+        codeTextFields[index - 1].becomeFirstResponder()
 	}
 
 	public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
 		guard let text = textField.text as NSString? else { return true }
+        if (string.count > 1) && (string == UIPasteboard.general.string) {
+            textField.resignFirstResponder()
+            DispatchQueue.main.async { self.pastePin(pin: string) }
+        }
 		return text.replacingCharacters(in: range, with: string).count <= 1
 	}
 
 	@IBAction func tryAgain() {
+        view.endEditing(true)
 		UIView.animate(withDuration: configuration.animationDuration) { [unowned self] in
 			self.phoneContainerView.isHidden = false
 			self.phoneContainerView.alpha = 1
@@ -57,6 +76,7 @@ extension PhoneVerificationController: UITextFieldDelegate {
 			self.codeSendButton.backgroundColor = self.configuration.buttonBackgroundDisabled
 			self.codeActivityIndicator.stopAnimating()
 		}
+        phoneNumberField.becomeFirstResponder()
 	}
 
 	@IBAction func verifyCode(_ sender: Any) {

@@ -1,11 +1,11 @@
-"button.cancel" = "Cancel";
-"button.send" = "Send";
-"button.try-again" = "Try again";
-"button.verify" = "Verify";
+"button.cancel" = "キャンセル";
+"button.send" = "送信する";
+"button.try-again" = "再送信";
+"button.verify" = "確認する";
 
-"description.phone" = "Please enter your phone number (ex. +32 473123456)";
-"description.code" = "Please enter the verification code you will receive by SMS";
+"description.phone" = "電話番号を入力してください";
+"description.code" = "確認コードを入力してください";
 
-"message.success" = "Success!";
+"message.success" = "成功です!";
 
-"placeholder.phone" = "Phone Number";
+"placeholder.phone" = "電話番号";

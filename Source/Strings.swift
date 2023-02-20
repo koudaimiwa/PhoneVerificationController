@@ -13,30 +13,30 @@ import Foundation
 internal enum L10n {
 
   internal enum Button {
-    /// Cancel
+    /// キャンセル
     internal static let cancel = L10n.tr("Localizable", "button.cancel")
-    /// Send
+    /// 送信する
     internal static let send = L10n.tr("Localizable", "button.send")
-    /// Try again
+    /// 再送信
     internal static let tryAgain = L10n.tr("Localizable", "button.try-again")
-    /// Verify
+    /// 確認する
     internal static let verify = L10n.tr("Localizable", "button.verify")
   }
 
   internal enum Description {
-    /// Please enter the verification code you will receive by SMS
+    /// 確認コードを入力してください
     internal static let code = L10n.tr("Localizable", "description.code")
-    /// Please enter your phone number (ex. +32 473123456)
+    /// 電話番号を入力してください
     internal static let phone = L10n.tr("Localizable", "description.phone")
   }
 
   internal enum Message {
-    /// Success!
+    /// 成功です!
     internal static let success = L10n.tr("Localizable", "message.success")
   }
 
   internal enum Placeholder {
-    /// Phone Number
+    /// 電話番号
     internal static let phone = L10n.tr("Localizable", "placeholder.phone")
   }
 }
